@@ -2,16 +2,19 @@ import os
 import csv
 import json
 from collections import defaultdict
+from models import AgencyBudget, FunctionSpending, ForeignAid
 current_dir = os.path.dirname(os.path.abspath(__file__))
-from .models import AgencyBudget, FunctionSpending, ForeignAid
 
 
 class AddGovSpending:
     def __init__(self, session):
         self.session = session
+        self.add_agency_budgets()
+        self.add_function_spending()
+        self.add_foreign_aid()
 
     def add_agency_budgets(self):
-        agency_file_name = os.path.join(current_dir, '..', 'budget', 'data', 'agency_resources.csv')
+        agency_file_name = os.path.join(current_dir, 'data', 'agency_resources.csv')
         with open(agency_file_name, mode='r') as file:
             reader = csv.DictReader(file)
             for row in reader:
@@ -22,7 +25,7 @@ class AddGovSpending:
 
     def add_function_spending(self):
         for year in range(2017, 2025):
-            function_file_name = os.path.join(current_dir, '..', 'budget', 'data', f'functions_{year}.csv')
+            function_file_name = os.path.join(current_dir, 'data', f'functions_{year}.csv')
             with open(function_file_name, mode='r') as file:
                 reader = csv.DictReader(file)
                 for row in reader:
@@ -71,10 +74,10 @@ class AddGovSpending:
             'Serbia and Montenegro (former)': 'Serbia'
         }
         exclude = ['World']
-        with open('../budget/data/lat_lng_mapper.json', 'r') as json_file:
+        with open('./data/lat_lng_mapper.json', 'r') as json_file:
             lat_lng_mapper = json.load(json_file)
         data = defaultdict(lambda: defaultdict(float))
-        with open('../budget/data/foreign_aid_all.csv', 'r') as csv_file:
+        with open('./data/foreign_aid_all.csv', 'r') as csv_file:
             csv_reader = csv.DictReader(csv_file)
             for row in csv_reader:
                 country = row['Country Name']
@@ -98,8 +101,3 @@ class AddGovSpending:
                     'lng': lat_lng_mapper[country]['lng']
                 })
         return entries
-
-    def add_data(self):
-        self.add_agency_budgets()
-        self.add_function_spending()
-        self.add_foreign_aid()
