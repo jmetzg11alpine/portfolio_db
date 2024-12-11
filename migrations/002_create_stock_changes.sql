@@ -1,4 +1,4 @@
-CREATE TABLE stock_changes (
+CREATE TABLE stock_transactions (
     id SERIAL PRIMARY KEY,
     stock VARCHAR(12),
     created_at DATE DEFAULT CURRENT_DATE,
